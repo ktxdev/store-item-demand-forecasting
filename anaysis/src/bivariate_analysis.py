@@ -46,6 +46,30 @@ class CategoricalVsNumericalAnalysis(BivariateAnalysisStrategy):
         sns.barplot(x=summary_df[feature1].astype(str), y=summary_df[feature2])
         plt.show()
 
+class StoreItemSalesBivariateAnalysis(BivariateAnalysisStrategy):
+    def analyze(self, data: pd.DataFrame, feature1: str = None, feature2: str = None) -> None:
+        avg_sales = data.groupby([feature1, feature2])["sales"].mean().reset_index()
+
+        # Plotting
+        stores = avg_sales[feature1].unique()
+        num_stores = len(stores)
+        fig, axes = plt.subplots(num_stores, 1, figsize=(20, 6 * num_stores), sharey=True)
+
+        for i, store in enumerate(stores):
+            store_data = avg_sales[avg_sales["store"] == store]
+            sns.barplot(
+                x="item",
+                y="sales",
+                data=store_data,
+                ax=axes[i] if num_stores > 1 else axes
+            )
+            axes[i % num_stores].set_title(f"Sales AVG for Store {store}")
+            axes[i % num_stores].set_ylabel("Average Sales")
+            axes[i % num_stores].set_xlabel("Item")
+
+        plt.tight_layout()
+        plt.show()
+
 
 class BivariateAnalyzer:
     def __init__(self, strategy: BivariateAnalysisStrategy):
