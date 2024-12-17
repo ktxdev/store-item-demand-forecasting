@@ -72,30 +72,6 @@ class StoreItemSalesBivariateAnalysis(BivariateAnalysisStrategy):
         plt.show()
 
 
-class StoreItemMonthBivariateAnalysis(BivariateAnalysisStrategy):
-    def analyze(self, data: pd.DataFrame, feature1: str, feature2: str) -> None:
-        avg_sales = data.groupby([feature1, feature2, 'month'])["sales"].mean().reset_index()
-
-        stores = avg_sales[feature1].unique()
-        num_stores = len(stores)
-        fig, axes = plt.subplots(num_stores, 1, figsize=(20, 8 * num_stores), sharey=True)
-
-        for i, store in enumerate(stores):
-            store_data = avg_sales[avg_sales["store"] == store]
-            sns.barplot(
-                x="month",
-                y="sales",
-                data=store_data,
-                ax=axes[i] if num_stores > 1 else axes
-            )
-            axes[i % num_stores].set_title(f"Sales AVG for Store {store} per month")
-            axes[i % num_stores].set_ylabel("Average Sales")
-            axes[i % num_stores].set_xlabel("Item")
-
-        plt.tight_layout()
-        plt.show()
-
-
 class BivariateAnalyzer:
     def __init__(self, strategy: BivariateAnalysisStrategy):
         """
