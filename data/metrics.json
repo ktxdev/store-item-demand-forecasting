@@ -1,0 +1,12 @@
+{
+    "LinearRegression_v1.0": {
+        "description": "Linear regression model",
+        "Mean Squared Error": 0.0245,
+        "Symmetric Mean Absolute Percentage Error": 3.2742,
+        "R-squared": 0.9202,
+        "Best Params": {
+            "fit_intercept": true,
+            "n_jobs": 1
+        }
+    }
+}

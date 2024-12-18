@@ -4,7 +4,8 @@ import pandas as pd
 from sklearn.model_selection import GridSearchCV
 
 from src.data_splitting import DataSplitter, DateDataSplittingStrategy
-from src.model_building import ModelBuilder, LinearRegressionStrategy
+from src.model_building import ModelBuilder, LinearRegressionStrategy, RandomForestRegressionStrategy, \
+    SupportVectorRegressionStrategy
 from src.model_evaluation import ModelEvaluator, RegressionPipelineEvaluationStrategy
 
 
@@ -29,10 +30,13 @@ class ModelTrainer:
 
 if __name__ == '__main__':
     import os
+    import joblib
     import numpy as np
     from anaysis.src.feature_engineering import FeatureEngineer, DateFeatureEngineeringStrategy, \
         LagFeatureEngineeringStrategy, RollingMeanFeatureEngineeringStrategy, \
         ExponentiallyWeightedMeanEngineeringStrategy
+
+    from src.experiment_logger import log_experiment
 
     data_path = os.path.join(os.path.dirname(__file__), '..', 'data/train.csv')
     data = pd.read_csv(data_path)
@@ -65,8 +69,16 @@ if __name__ == '__main__':
 
     data_spliter = DataSplitter(DateDataSplittingStrategy())
     evaluation_strategy = ModelEvaluator(RegressionPipelineEvaluationStrategy())
-    building_strategy = ModelBuilder(LinearRegressionStrategy())
+    building_strategy = ModelBuilder(RandomForestRegressionStrategy())
 
     trainer = ModelTrainer(building_strategy, evaluation_strategy, data_spliter)
 
     grid_search, metrics = trainer.train_and_evaluate(data)
+
+    model_name = "RandomForestRegression_v1.0"
+    log_experiment(model_name, "Random forest regression model", metrics)
+
+    models_dir_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "../models")
+    os.makedirs(models_dir_path, exist_ok=True)
+    # Save the best pipeline to a file
+    joblib.dump(grid_search.best_estimator_, os.path.join(models_dir_path, f"{model_name}.pkl"))
